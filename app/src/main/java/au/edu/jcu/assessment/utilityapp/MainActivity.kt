@@ -1,5 +1,8 @@
 package au.edu.jcu.assessment.utilityapp
 
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.withStyle
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import androidx.compose.runtime.LaunchedEffect
@@ -136,15 +139,32 @@ fun UtilityScreen(
             style = MaterialTheme.typography.bodyLarge
         )
 
+        val aqiColor = when (airQuality?.us_aqi) {
+            null -> MaterialTheme.colorScheme.onSurface
+            in 0..50 -> Color(0xFF2E7D32)
+            in 51..100 -> Color(0xFFB8860B)
+            in 101..150 -> Color(0xFFEF6C00)
+            in 151..200 -> Color(0xFFC62828)
+            in 201..300 -> Color(0xFF7B1FA2)
+            else -> Color(0xFF7E0023)
+        }
+
         Text(
-            text = when {
-                isLoading -> "Loading..."
-                errorMessage != null -> "Unavailable"
-                airQuality != null -> "US AQI: ${airQuality?.us_aqi}"
-                else -> "No data"
+            text = buildAnnotatedString {
+                when {
+                    isLoading -> append("Loading...")
+                    errorMessage != null -> append("Unavailable")
+                    airQuality != null -> {
+                        append("US AQI: ")
+                        withStyle(SpanStyle(color = aqiColor)) {
+                            append("${airQuality.us_aqi}")
+                        }
+                    }
+                    else -> append("No data")
+                }
             },
             style = MaterialTheme.typography.displayLarge,
-            color = Color(0xFF2E7D32)
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Text(
