@@ -38,6 +38,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.lifecycle.viewmodel.compose.viewModel
 import au.edu.jcu.assessment.utilityapp.ui.theme.MobileTech_UtilityAppTheme
 
@@ -126,6 +131,15 @@ fun UtilityScreen(
         airQualityViewModel.fetchAirQuality(selectedLocation)
     }
 
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        Image(
+            painter = painterResource(R.drawable.singapore_bg),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop,
+            alpha = 0.55f
+        )
 
     Column(
         modifier = Modifier
@@ -139,6 +153,17 @@ fun UtilityScreen(
             style = MaterialTheme.typography.bodyLarge
         )
 
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = Color.White.copy(alpha = 0.82f),
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+
         val aqiColor = when (airQuality?.us_aqi) {
             null -> MaterialTheme.colorScheme.onSurface
             in 0..50 -> Color(0xFF2E7D32)
@@ -149,23 +174,25 @@ fun UtilityScreen(
             else -> Color(0xFF7E0023)
         }
 
-        Text(
-            text = buildAnnotatedString {
-                when {
-                    isLoading -> append("Loading...")
-                    errorMessage != null -> append("Unavailable")
-                    airQuality != null -> {
-                        append("US AQI: ")
-                        withStyle(SpanStyle(color = aqiColor)) {
-                            append("${airQuality.us_aqi}")
-                        }
-                    }
-                    else -> append("No data")
-                }
-            },
-            style = MaterialTheme.typography.displayLarge,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = "US AQI:",
+                    style = MaterialTheme.typography.titleLarge
+                )
+
+                Text(
+                    text = when {
+                        isLoading -> "Loading..."
+                        errorMessage != null -> "Unavailable"
+                        airQuality != null -> "${airQuality.us_aqi}"
+                        else -> "No data"
+                    },
+                    style = MaterialTheme.typography.displayLarge,
+                    color = aqiColor
+                )
+            }
 
         Text(
             text = when (airQuality?.us_aqi) {
@@ -188,7 +215,7 @@ fun UtilityScreen(
                 else -> "No air quality data available"
             },
             style = MaterialTheme.typography.bodySmall
-        )
+        )} // AQI Card
 
 
         Row(
@@ -234,6 +261,7 @@ fun UtilityScreen(
         ) {
             Text(if (isLoading) "Refreshing..." else "Refresh")
         }
+    }
 
     }
 }
