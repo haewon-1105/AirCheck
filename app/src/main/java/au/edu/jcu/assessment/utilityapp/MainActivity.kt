@@ -31,6 +31,9 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.CardDefaults
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -140,7 +143,13 @@ fun UtilityScreen(
     Box(modifier = Modifier.fillMaxSize()) {
 
         Image(
-            painter = painterResource(R.drawable.singapore_bg),
+            painter = painterResource(
+                when (selectedLocation) {
+                    "Seoul" -> R.drawable.seoul_bg
+                    "Tokyo" -> R.drawable.tokyo_bg
+                    else -> R.drawable.singapore_bg
+                }
+            ),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
@@ -320,22 +329,132 @@ fun SettingsScreen(
             .fillMaxSize()
             .padding(24.dp), Arrangement.spacedBy(16.dp)
     ) {
-        Text("Settings Screen", style = MaterialTheme.typography.headlineMedium)
-        Text("This is where you can add toggles or preferences.")
+        Text(
+            text = "Settings",
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.ExtraBold,
+            color = Color(0xFF10164F)
+        )
 
-        // Location selection
-        Text("Selected Location: $selectedLocation")
+        Text(
+            text = "Choose your location",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold,
+            color = Color(0xFF10164F)
+        )
 
-        Button(onClick = { onLocationChange("Singapore") }) {
-            Text("Singapore")
+        Text(
+            text = "Select a city to view its air quality.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color(0xFF606580)
+        )
+
+        Card(
+            onClick = { onLocationChange("Singapore") },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = if (selectedLocation == "Singapore")
+                    Color(0xFFEDE8FF)
+                else
+                    Color(0xFFF7F5FC)
+            ),
+            border = BorderStroke(
+                width = if (selectedLocation == "Singapore") 2.dp else 1.dp,
+                color = if (selectedLocation == "Singapore")
+                    Color(0xFF7665C9)
+                else
+                    Color(0xFFE0DCEB)
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = "Singapore",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF10164F)
+                    )
+
+                    Text(
+                        text = "Marina Bay",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFF606580)
+                    )
+                }
+
+                if (selectedLocation == "Singapore") {
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = "Selected",
+                        tint = Color(0xFF7665C9),
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            }
         }
 
-        Button(onClick = { onLocationChange("Seoul") }) {
-            Text("Seoul")
-        }
+        listOf(
+            "Seoul" to "N Seoul Tower",
+            "Tokyo" to "Tokyo Tower"
+        ).forEach { (city, landmark) ->
 
-        Button(onClick = { onLocationChange("Tokyo") }) {
-            Text("Tokyo")
+            Card(
+                onClick = { onLocationChange(city) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (selectedLocation == city)
+                        Color(0xFFEDE8FF)
+                    else
+                        Color(0xFFF7F5FC)
+                ),
+                border = BorderStroke(
+                    width = if (selectedLocation == city) 2.dp else 1.dp,
+                    color = if (selectedLocation == city)
+                        Color(0xFF7665C9)
+                    else
+                        Color(0xFFE0DCEB)
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        Text(
+                            text = city,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF10164F)
+                        )
+
+                        Text(
+                            text = landmark,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color(0xFF606580)
+                        )
+                    }
+
+                    if (selectedLocation == city) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = "Selected",
+                            tint = Color(0xFF7665C9),
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                }
+            }
         }
     }
 }
