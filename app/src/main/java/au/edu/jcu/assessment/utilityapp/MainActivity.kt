@@ -18,11 +18,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Card
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material.icons.filled.Air
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -34,6 +37,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -147,21 +153,29 @@ fun UtilityScreen(
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text("AirCheck SG", style = MaterialTheme.typography.headlineMedium)
         Text(
-            "$selectedLocation Air Quality",
-            style = MaterialTheme.typography.bodyLarge
+            text = "AirCheck",
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.ExtraBold,
+            color = Color(0xFF10164F)
+        )
+
+        Text(
+            text = "$selectedLocation Air Quality",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold,
+            color = Color(0xFF10164F)
         )
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color = Color.White.copy(alpha = 0.82f),
+                    color = Color.White.copy(alpha = 0.22f),
                     shape = RoundedCornerShape(24.dp)
                 )
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
 
         val aqiColor = when (airQuality?.us_aqi) {
@@ -169,17 +183,21 @@ fun UtilityScreen(
             in 0..50 -> Color(0xFF2E7D32)
             in 51..100 -> Color(0xFFB8860B)
             in 101..150 -> Color(0xFFEF6C00)
-            in 151..200 -> Color(0xFFC62828)
+            in 151..200 -> Color(0xFFD96B6B)
             in 201..300 -> Color(0xFF7B1FA2)
             else -> Color(0xFF7E0023)
         }
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
                     text = "US AQI:",
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF303040)
                 )
 
                 Text(
@@ -190,6 +208,7 @@ fun UtilityScreen(
                         else -> "No data"
                     },
                     style = MaterialTheme.typography.displayLarge,
+                    fontWeight = FontWeight.Bold,
                     color = aqiColor
                 )
             }
@@ -204,7 +223,9 @@ fun UtilityScreen(
                 in 201..300 -> "Very Unhealthy"
                 else -> "Hazardous"
             },
-            style = MaterialTheme.typography.headlineSmall
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            color = aqiColor
         )
 
         Text(
@@ -222,30 +243,43 @@ fun UtilityScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Card(
-                modifier = Modifier.weight(1f)
-            ) {
+            listOf(
+                "PM2.5" to airQuality?.pm2_5,
+                "PM10" to airQuality?.pm10
+            ).forEach { (label, value) ->
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(
+                            color = Color.White.copy(alpha = 0.25f),
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text("PM2.5")
-                    Text(
-                        text = airQuality?.pm2_5?.let { "$it µg/m³" } ?: "--",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                }
-            }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
 
-            Card(
-                modifier = Modifier.weight(1f)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text("PM10")
+                        Icon(
+                            imageVector = Icons.Default.Air,
+                            contentDescription = null,
+                            tint = Color(0xFF8EA8EF),
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+
                     Text(
-                        text = airQuality?.pm10?.let { "$it µg/m³" } ?: "--",
-                        style = MaterialTheme.typography.titleLarge
+                        text = value?.let { "$it µg/m³" } ?: "--",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color(0xFF10164F)
                     )
                 }
             }
@@ -257,9 +291,19 @@ fun UtilityScreen(
             onClick = {
                 refreshCount++
             },
-            enabled = !isLoading
+            enabled = !isLoading,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            shape = RoundedCornerShape(28.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF6657A6)
+            )
         ) {
-            Text(if (isLoading) "Refreshing..." else "Refresh")
+            Text(
+                text = if (isLoading) "Refreshing..." else "Refresh",
+                style = MaterialTheme.typography.titleMedium
+            )
         }
     }
 
