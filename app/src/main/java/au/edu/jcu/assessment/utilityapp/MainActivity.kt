@@ -4,6 +4,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.withStyle
 import retrofit2.Retrofit
+import androidx.compose.ui.draw.clip
 import retrofit2.converter.gson.GsonConverterFactory
 import androidx.compose.runtime.LaunchedEffect
 import android.os.Bundle
@@ -389,13 +390,27 @@ fun SettingsScreen(
                     )
                 }
 
-                if (selectedLocation == "Singapore") {
-                    Icon(
-                        imageVector = Icons.Default.CheckCircle,
-                        contentDescription = "Selected",
-                        tint = Color(0xFF7665C9),
-                        modifier = Modifier.size(28.dp)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.singapore_bg),
+                        contentDescription = "Marina Bay, Singapore",
+                        modifier = Modifier
+                            .size(72.dp)
+                            .clip(RoundedCornerShape(16.dp)),
+                        contentScale = ContentScale.Crop
                     )
+
+                    if (selectedLocation == "Singapore") {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = "Selected",
+                            tint = Color(0xFF7665C9),
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
                 }
             }
         }
@@ -445,13 +460,33 @@ fun SettingsScreen(
                         )
                     }
 
-                    if (selectedLocation == city) {
-                        Icon(
-                            imageVector = Icons.Default.CheckCircle,
-                            contentDescription = "Selected",
-                            tint = Color(0xFF7665C9),
-                            modifier = Modifier.size(28.dp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(
+                                when (city) {
+                                    "Seoul" -> R.drawable.seoul_bg
+                                    "Tokyo" -> R.drawable.tokyo_bg
+                                    else -> R.drawable.singapore_bg
+                                }
+                            ),
+                            contentDescription = "$city landmark",
+                            modifier = Modifier
+                                .size(72.dp)
+                                .clip(RoundedCornerShape(16.dp)),
+                            contentScale = ContentScale.Crop
                         )
+
+                        if (selectedLocation == city) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = "Selected",
+                                tint = Color(0xFF7665C9),
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
                     }
                 }
             }
