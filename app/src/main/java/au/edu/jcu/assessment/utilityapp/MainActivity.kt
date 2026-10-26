@@ -7,10 +7,14 @@ import retrofit2.Retrofit
 import androidx.compose.ui.draw.clip
 import retrofit2.converter.gson.GsonConverterFactory
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -133,12 +137,21 @@ fun UtilityScreen(
     )
 ) {
     var refreshCount by remember { mutableIntStateOf(0) }
+    var showErrorDialog by remember { mutableStateOf(true) }
     val airQuality = airQualityViewModel.airQuality
     val isLoading = airQualityViewModel.isLoading
     val errorMessage = airQualityViewModel.errorMessage
 
     LaunchedEffect(selectedLocation, refreshCount) {
         airQualityViewModel.fetchAirQuality(selectedLocation)
+    }
+
+    LaunchedEffect(errorMessage, isLoading) {
+        if (errorMessage != null) {
+            showErrorDialog = true
+        } else if (!isLoading && airQuality != null) {
+            showErrorDialog = false
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -199,7 +212,9 @@ fun UtilityScreen(
         }
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -213,12 +228,12 @@ fun UtilityScreen(
                 Text(
                     text = when {
                         isLoading -> "Loading..."
-                        errorMessage != null -> "Unavailable"
+                        errorMessage != null -> "--"
                         airQuality != null -> "${airQuality.us_aqi}"
-                        else -> "No data"
+                        else -> "--"
                     },
                     style = MaterialTheme.typography.displayLarge,
-                    fontWeight = FontWeight.Bold,
+                    fontSize = if (airQuality == null) 28.sp else 56.sp,
                     color = aqiColor
                 )
             }
@@ -315,10 +330,50 @@ fun UtilityScreen(
                 style = MaterialTheme.typography.titleMedium
             )
         }
-    }
 
-    }
-}
+    } // Column 끝
+
+        if (showErrorDialog && (errorMessage != null || isLoading)) {
+            AlertDialog(
+                onDismissRequest = {
+                    showErrorDialog = false
+                },
+                title = {
+                    Text("Unable to Load Data")
+                },
+                text = {
+                    Text(
+                        if (isLoading) {
+                            "Trying to reconnect..."
+                        } else {
+                            errorMessage ?: "Unable to load air quality data."
+                        }
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            refreshCount++
+                        },
+                        enabled = !isLoading
+                    ) {
+                        Text(if (isLoading) "Retrying..." else "Retry")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            showErrorDialog = false
+                        }
+                    ) {
+                        Text("Close")
+                    }
+                }
+            )
+        }
+
+    } // Box 끝
+} // UtilityScreen 끝
 
 @Composable
 fun SettingsScreen(
@@ -352,7 +407,9 @@ fun SettingsScreen(
 
         Card(
             onClick = { onLocationChange("Singapore") },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp),
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
                 containerColor = if (selectedLocation == "Singapore")
@@ -398,7 +455,7 @@ fun SettingsScreen(
                         painter = painterResource(R.drawable.singapore_bg),
                         contentDescription = "Marina Bay, Singapore",
                         modifier = Modifier
-                            .size(72.dp)
+                            .size(width = 72.dp, height = 40.dp)
                             .clip(RoundedCornerShape(16.dp)),
                         contentScale = ContentScale.Crop
                     )
@@ -422,7 +479,9 @@ fun SettingsScreen(
 
             Card(
                 onClick = { onLocationChange(city) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = if (selectedLocation == city)
@@ -445,7 +504,9 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
                         Text(
                             text = city,
                             style = MaterialTheme.typography.titleLarge,
@@ -474,7 +535,7 @@ fun SettingsScreen(
                             ),
                             contentDescription = "$city landmark",
                             modifier = Modifier
-                                .size(72.dp)
+                                .size(width = 72.dp, height = 40.dp)
                                 .clip(RoundedCornerShape(16.dp)),
                             contentScale = ContentScale.Crop
                         )
