@@ -1,70 +1,63 @@
 package au.edu.jcu.assessment.utilityapp
 
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.withStyle
-import retrofit2.Retrofit
-import androidx.compose.ui.draw.clip
-import retrofit2.converter.gson.GsonConverterFactory
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.TextButton
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.Card
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Air
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material.icons.filled.Air
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.CardDefaults
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.Image
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import au.edu.jcu.assessment.utilityapp.data.City
+import au.edu.jcu.assessment.utilityapp.ui.AirQualityViewModel
 import au.edu.jcu.assessment.utilityapp.ui.theme.MobileTech_UtilityAppTheme
 
-val airQualityApi: AirQualityApi = Retrofit.Builder()
-    .baseUrl("https://air-quality-api.open-meteo.com/")
-    .addConverterFactory(GsonConverterFactory.create())
-    .build()
-    .create(AirQualityApi::class.java)
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,13 +122,15 @@ fun UtilityApp() {
 
 @Composable
 fun UtilityScreen(
-    selectedLocation: String,
-    airQualityViewModel: AirQualityViewModel = viewModel(
+    selectedLocation: String
+) {
+    val application = LocalContext.current.applicationContext as UtilityApplication
+
+    val airQualityViewModel: AirQualityViewModel = viewModel(
         factory = AirQualityViewModelFactory(
-            repository = AirQualityRepository(airQualityApi)
+            repository = application.container.airQualityRepository
         )
     )
-) {
     var refreshCount by remember { mutableIntStateOf(0) }
     var showErrorDialog by remember { mutableStateOf(true) }
     val airQuality = airQualityViewModel.airQuality
@@ -143,7 +138,13 @@ fun UtilityScreen(
     val errorMessage = airQualityViewModel.errorMessage
 
     LaunchedEffect(selectedLocation, refreshCount) {
-        airQualityViewModel.fetchAirQuality(selectedLocation)
+        val city = when (selectedLocation) {
+            "Seoul" -> City.Seoul
+            "Tokyo" -> City.Tokyo
+            else -> City.Singapore
+        }
+
+        airQualityViewModel.fetchAirQuality(city)
     }
 
     LaunchedEffect(errorMessage, isLoading) {
@@ -201,7 +202,7 @@ fun UtilityScreen(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
 
-        val aqiColor = when (airQuality?.us_aqi) {
+        val aqiColor = when (airQuality?.usAqi) {
             null -> MaterialTheme.colorScheme.onSurface
             in 0..50 -> Color(0xFF2E7D32)
             in 51..100 -> Color(0xFFB8860B)
@@ -229,7 +230,7 @@ fun UtilityScreen(
                     text = when {
                         isLoading -> "Loading..."
                         errorMessage != null -> "--"
-                        airQuality != null -> "${airQuality.us_aqi}"
+                        airQuality != null -> "${airQuality.usAqi}"
                         else -> "--"
                     },
                     style = MaterialTheme.typography.displayLarge,
@@ -239,7 +240,7 @@ fun UtilityScreen(
             }
 
         Text(
-            text = when (airQuality?.us_aqi) {
+            text = when (airQuality?.usAqi) {
                 null -> if (isLoading) "Loading..." else "Unavailable"
                 in 0..50 -> "Good"
                 in 51..100 -> "Moderate"
@@ -269,7 +270,7 @@ fun UtilityScreen(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             listOf(
-                "PM2.5" to airQuality?.pm2_5,
+                "PM2.5" to airQuality?.pm25,
                 "PM10" to airQuality?.pm10
             ).forEach { (label, value) ->
                 Column(

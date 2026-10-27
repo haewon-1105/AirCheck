@@ -2,6 +2,8 @@ package au.edu.jcu.assessment.utilityapp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import au.edu.jcu.assessment.utilityapp.data.AirQualityRepository
+import au.edu.jcu.assessment.utilityapp.ui.AirQualityViewModel
 
 class AirQualityViewModelFactory(
     private val repository: AirQualityRepository
