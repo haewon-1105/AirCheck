@@ -1,3 +1,4 @@
+
 package au.edu.jcu.assessment.utilityapp.ui
 
 import androidx.compose.foundation.layout.Arrangement
@@ -10,17 +11,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import au.edu.jcu.assessment.utilityapp.R
+import au.edu.jcu.assessment.utilityapp.data.City
 import au.edu.jcu.assessment.utilityapp.ui.components.CityCard
+import au.edu.jcu.assessment.utilityapp.ui.theme.MobileTech_UtilityAppTheme
 
+/**
+ * Displays available cities and allows the user to select one.
+ */
 @Composable
 fun SettingsScreen(
-    selectedLocation: String,
-    onLocationChange: (String) -> Unit
+    selectedCity: City,
+    onCitySelected: (City) -> Unit,
+    modifier: Modifier = Modifier
 ) {
+    val cities = listOf(
+        Triple(City.Singapore, "Marina Bay", R.drawable.singapore_bg),
+        Triple(City.Seoul, "N Seoul Tower", R.drawable.seoul_bg),
+        Triple(City.Tokyo, "Tokyo Tower", R.drawable.tokyo_bg)
+    )
+
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -45,36 +59,28 @@ fun SettingsScreen(
             color = Color(0xFF606580)
         )
 
-        val cities = listOf(
-            Triple("Singapore", "Marina Bay", R.drawable.singapore_bg),
-            Triple("Seoul", "N Seoul Tower", R.drawable.seoul_bg),
-            Triple("Tokyo", "Tokyo Tower", R.drawable.tokyo_bg)
-        )
-
         cities.forEach { (city, landmark, imageRes) ->
             CityCard(
-                city = city,
+                city = city.name,
                 landmark = landmark,
                 imageRes = imageRes,
-                isSelected = selectedLocation == city,
-                onClick = { onLocationChange(city) }
+                isSelected = selectedCity == city,
+                onClick = { onCitySelected(city) }
             )
         }
     }
 }
 
-
-@androidx.compose.ui.tooling.preview.Preview(
+@Preview(
     showBackground = true,
     name = "AirCheck Settings Preview"
 )
 @Composable
 fun SettingsScreenPreview() {
-    au.edu.jcu.assessment.utilityapp.ui.theme.MobileTech_UtilityAppTheme {
+    MobileTech_UtilityAppTheme {
         SettingsScreen(
-            selectedLocation = "Singapore",
-            onLocationChange = {}
+            selectedCity = City.Singapore,
+            onCitySelected = {}
         )
     }
 }
-

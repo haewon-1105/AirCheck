@@ -21,6 +21,10 @@ import androidx.compose.ui.unit.sp
 import au.edu.jcu.assessment.utilityapp.ui.AirQualityUiState
 import au.edu.jcu.assessment.utilityapp.ui.AqiLevel
 
+/**
+ * Displays the US AQI value, air quality category,
+ * health advice, and data loading status.
+ */
 @Composable
 fun AqiCard(
     uiState: AirQualityUiState,
@@ -76,6 +80,14 @@ fun AqiCard(
             fontWeight = FontWeight.Bold,
             color = aqiColor
         )
+
+        if (aqiLevel != null) {
+            Text(
+                text = aqiLevel.advice,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF303040)
+            )
+        }
 
         Text(
             text = when {

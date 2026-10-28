@@ -1,21 +1,28 @@
-
 package au.edu.jcu.assessment.utilityapp.ui
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import au.edu.jcu.assessment.utilityapp.UtilityApplication
 import au.edu.jcu.assessment.utilityapp.data.AirQualityRepository
 import au.edu.jcu.assessment.utilityapp.data.City
+import java.io.IOException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.net.ConnectException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 
+/**
+ * Manages air quality data, selected city, and loading or error states.
+ *
+ * The selected city is restored through SavedStateHandle.
+ */
 class AirQualityViewModel(
     private val repository: AirQualityRepository,
     private val savedStateHandle: SavedStateHandle
@@ -29,26 +36,38 @@ class AirQualityViewModel(
     private var fetchJob: Job? = null
 
     var selectedCity by mutableStateOf(
-        City.fromName(savedStateHandle["selectedCity"] ?: City.Singapore.name)
+        City.fromName(
+            savedStateHandle[KEY_SELECTED_CITY] ?: City.Singapore.name
+        )
     )
         private set
+
     init {
         refresh()
     }
 
+    /**
+     * Updates the selected city and loads its air quality data.
+     */
     fun selectCity(city: City) {
         if (selectedCity == city) return
 
         selectedCity = city
-        savedStateHandle["selectedCity"] = city.name
+        savedStateHandle[KEY_SELECTED_CITY] = city.name
         fetchAirQuality(city)
     }
 
+    /**
+     * Reloads air quality data for the currently selected city.
+     */
     fun refresh() {
         fetchAirQuality(selectedCity)
     }
 
-    fun fetchAirQuality(city: City) {
+    /**
+     * Cancels the previous request and fetches the latest air quality data.
+     */
+    private fun fetchAirQuality(city: City) {
         fetchJob?.cancel()
 
         fetchJob = viewModelScope.launch {
@@ -61,9 +80,7 @@ class AirQualityViewModel(
                 throw e
             } catch (e: Exception) {
                 val message = when (e) {
-                    is UnknownHostException,
-                    is ConnectException,
-                    is SocketTimeoutException ->
+                    is IOException ->
                         "Please check your internet connection and try again."
 
                     else ->
@@ -71,6 +88,24 @@ class AirQualityViewModel(
                 }
 
                 uiState = AirQualityUiState.Error(message)
+            }
+        }
+    }
+
+    companion object {
+        private const val KEY_SELECTED_CITY = "selectedCity"
+
+        /**
+         * Creates the ViewModel with application dependencies and saved state.
+         */
+        val Factory = viewModelFactory {
+            initializer {
+                val app = this[APPLICATION_KEY] as UtilityApplication
+
+                AirQualityViewModel(
+                    repository = app.container.airQualityRepository,
+                    savedStateHandle = createSavedStateHandle()
+                )
             }
         }
     }

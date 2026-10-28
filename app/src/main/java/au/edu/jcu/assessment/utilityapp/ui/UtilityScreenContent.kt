@@ -1,3 +1,4 @@
+
 package au.edu.jcu.assessment.utilityapp.ui
 
 import androidx.compose.foundation.Image
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -20,25 +23,34 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import au.edu.jcu.assessment.utilityapp.R
-import au.edu.jcu.assessment.utilityapp.data.City
 import au.edu.jcu.assessment.utilityapp.ui.components.AqiCard
 import au.edu.jcu.assessment.utilityapp.ui.components.PollutantCard
+import au.edu.jcu.assessment.utilityapp.ui.theme.MobileTech_UtilityAppTheme
 
+/**
+ * Displays air quality details, pollutant values, and a refresh button.
+ *
+ * The background image changes according to the selected location.
+ */
 @Composable
 fun UtilityScreenContent(
-    selectedLocation: String,
+    cityName: String,
     uiState: AirQualityUiState,
-    onRefresh: () -> Unit
+    onRefresh: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val airQuality = (uiState as? AirQualityUiState.Success)?.data
     val isLoading = uiState is AirQualityUiState.Loading
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = modifier.fillMaxSize()
+    ) {
         Image(
             painter = painterResource(
-                when (selectedLocation) {
+                when (cityName) {
                     "Seoul" -> R.drawable.seoul_bg
                     "Tokyo" -> R.drawable.tokyo_bg
                     else -> R.drawable.singapore_bg
@@ -53,6 +65,7 @@ fun UtilityScreenContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -64,7 +77,7 @@ fun UtilityScreenContent(
             )
 
             Text(
-                text = "$selectedLocation Air Quality",
+                text = "$cityName Air Quality",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF10164F)
@@ -81,6 +94,7 @@ fun UtilityScreenContent(
                     value = airQuality?.pm25,
                     modifier = Modifier.weight(1f)
                 )
+
                 PollutantCard(
                     label = "PM10",
                     value = airQuality?.pm10,
@@ -108,16 +122,15 @@ fun UtilityScreenContent(
     }
 }
 
-
-@androidx.compose.ui.tooling.preview.Preview(
+@Preview(
     showBackground = true,
     name = "AirCheck Loading Preview"
 )
 @Composable
 fun UtilityScreenContentPreview() {
-    au.edu.jcu.assessment.utilityapp.ui.theme.MobileTech_UtilityAppTheme {
+    MobileTech_UtilityAppTheme {
         UtilityScreenContent(
-            selectedLocation = "Singapore",
+            cityName = "Singapore",
             uiState = AirQualityUiState.Loading,
             onRefresh = {}
         )
