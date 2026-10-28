@@ -34,5 +34,9 @@ data class City(
         )
 
         val all: List<City> = listOf(Singapore, Seoul, Tokyo)
+
+        fun fromName(name: String): City {
+            return all.firstOrNull { it.name == name } ?: Singapore
+        }
     }
 }

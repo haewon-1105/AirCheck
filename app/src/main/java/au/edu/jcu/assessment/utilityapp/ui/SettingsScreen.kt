@@ -1,4 +1,3 @@
-
 package au.edu.jcu.assessment.utilityapp.ui
 
 import androidx.compose.foundation.layout.Arrangement
@@ -63,3 +62,19 @@ fun SettingsScreen(
         }
     }
 }
+
+
+@androidx.compose.ui.tooling.preview.Preview(
+    showBackground = true,
+    name = "AirCheck Settings Preview"
+)
+@Composable
+fun SettingsScreenPreview() {
+    au.edu.jcu.assessment.utilityapp.ui.theme.MobileTech_UtilityAppTheme {
+        SettingsScreen(
+            selectedLocation = "Singapore",
+            onLocationChange = {}
+        )
+    }
+}
+
