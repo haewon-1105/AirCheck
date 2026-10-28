@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import au.edu.jcu.assessment.utilityapp.data.AirQualityRepository
 import au.edu.jcu.assessment.utilityapp.data.City
-import au.edu.jcu.assessment.utilityapp.data.CurrentAirQuality
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -20,13 +19,9 @@ class AirQualityViewModel(
     private val repository: AirQualityRepository
 ) : ViewModel() {
 
-    var airQuality by mutableStateOf<CurrentAirQuality?>(null)
-        private set
-
-    var isLoading by mutableStateOf(false)
-        private set
-
-    var errorMessage by mutableStateOf<String?>(null)
+    var uiState by mutableStateOf<AirQualityUiState>(
+        AirQualityUiState.Loading
+    )
         private set
 
     private var fetchJob: Job? = null
@@ -35,16 +30,15 @@ class AirQualityViewModel(
         fetchJob?.cancel()
 
         fetchJob = viewModelScope.launch {
-            isLoading = true
-            errorMessage = null
-            airQuality = null
+            uiState = AirQualityUiState.Loading
 
             try {
-                airQuality = repository.getAirQuality(city)
+                val result = repository.getAirQuality(city)
+                uiState = AirQualityUiState.Success(result)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                errorMessage = when (e) {
+                val message = when (e) {
                     is UnknownHostException,
                     is ConnectException,
                     is SocketTimeoutException ->
@@ -53,8 +47,8 @@ class AirQualityViewModel(
                     else ->
                         "Unable to load air quality data. Please try again."
                 }
-            } finally {
-                isLoading = false
+
+                uiState = AirQualityUiState.Error(message)
             }
         }
     }
