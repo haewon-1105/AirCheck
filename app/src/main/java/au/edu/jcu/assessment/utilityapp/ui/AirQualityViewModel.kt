@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.SavedStateHandle
 import au.edu.jcu.assessment.utilityapp.data.AirQualityRepository
 import au.edu.jcu.assessment.utilityapp.data.City
 import kotlinx.coroutines.CancellationException
@@ -16,7 +17,8 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
 class AirQualityViewModel(
-    private val repository: AirQualityRepository
+    private val repository: AirQualityRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     var uiState by mutableStateOf<AirQualityUiState>(
@@ -25,6 +27,26 @@ class AirQualityViewModel(
         private set
 
     private var fetchJob: Job? = null
+
+    var selectedCity by mutableStateOf(
+        City.fromName(savedStateHandle["selectedCity"] ?: City.Singapore.name)
+    )
+        private set
+    init {
+        refresh()
+    }
+
+    fun selectCity(city: City) {
+        if (selectedCity == city) return
+
+        selectedCity = city
+        savedStateHandle["selectedCity"] = city.name
+        fetchAirQuality(city)
+    }
+
+    fun refresh() {
+        fetchAirQuality(selectedCity)
+    }
 
     fun fetchAirQuality(city: City) {
         fetchJob?.cancel()

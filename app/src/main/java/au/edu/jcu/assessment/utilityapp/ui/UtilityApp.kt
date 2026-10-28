@@ -14,17 +14,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import au.edu.jcu.assessment.utilityapp.AirQualityViewModelFactory
+import au.edu.jcu.assessment.utilityapp.UtilityApplication
 
 @Composable
 fun UtilityApp() {
+    val application = LocalContext.current.applicationContext as UtilityApplication
+
+    val airQualityViewModel: AirQualityViewModel = viewModel(
+        factory = AirQualityViewModelFactory(
+            repository = application.container.airQualityRepository
+        )
+    )
     var selectedTab by rememberSaveable {
         mutableStateOf(AppTab.Utility)
     }
-    var selectedLocationName by rememberSaveable {
-        mutableStateOf(City.Singapore.name)
-    }
-
-    val selectedCity = City.fromName(selectedLocationName)
+    val selectedCity = airQualityViewModel.selectedCity
 
     Scaffold(
         bottomBar = {
@@ -47,12 +54,15 @@ fun UtilityApp() {
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             when (selectedTab) {
-                AppTab.Utility -> UtilityScreen(selectedCity)
+                AppTab.Utility -> UtilityScreen(
+                    selectedLocation = selectedCity,
+                    airQualityViewModel = airQualityViewModel
+                )
 
                 AppTab.Settings -> SettingsScreen(
                     selectedLocation = selectedCity.name,
                     onLocationChange = { newLocation ->
-                        selectedLocationName = newLocation
+                        airQualityViewModel.selectCity(City.fromName(newLocation))
                     }
                 )
             }
