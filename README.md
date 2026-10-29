@@ -4,6 +4,16 @@ AirCheck is an Android utility application developed for **CP3406 Assessment 1: 
 
 The app allows users to check current air quality information for selected cities and provides health guidance based on the US Air Quality Index (AQI).
 
+## App Screenshots
+
+| Light Mode | Dark Mode |
+|---|---|
+| <img src="screenshots/light-mode.png" width="300"> | <img src="screenshots/dark-mode.png" width="300"> |
+
+| Settings – Light Mode | Settings – Dark Mode |
+|---|---|
+| <img src="screenshots/settings-light.png" width="300"> | <img src="screenshots/settings-dark.png" width="300"> |
+
 ## Features
 
 - **Air Quality Monitoring:** Displays the latest available US AQI data.
