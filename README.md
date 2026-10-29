@@ -170,6 +170,8 @@ The following functionality was checked:
 
 ## Project Context
 
-This application was developed as part of **CP3406 Assessment 1** for educational purposes.
+This application was developed as part of **CP3406 Assessment 1** at James Cook University for educational purposes.
+
+AirCheck extends the initial Android project with real-time API integration, MVVM-based state management, manual dependency injection, city selection, AQI-based health guidance, and a Material Design 3 user interface.
 
 The project builds on the provided Android utility app starter template and extends it with real API integration, state management, city selection, health guidance, and responsive Material Design 3 UI.
