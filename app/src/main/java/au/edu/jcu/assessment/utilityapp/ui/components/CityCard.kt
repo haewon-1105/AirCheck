@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,11 +23,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
+/**
+ * Displays a selectable city with its landmark image.
+ */
 @Composable
 fun CityCard(
     city: String,
@@ -37,25 +40,27 @@ fun CityCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = MaterialTheme.colorScheme
+
     Card(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(100.dp),
+            .heightIn(min = 100.dp),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) {
-                Color(0xFFEDE8FF)
+                colors.secondaryContainer
             } else {
-                Color(0xFFF7F5FC)
+                colors.surfaceVariant
             }
         ),
         border = BorderStroke(
             width = if (isSelected) 2.dp else 1.dp,
             color = if (isSelected) {
-                Color(0xFF7665C9)
+                colors.primary
             } else {
-                Color(0xFFE0DCEB)
+                colors.outlineVariant
             }
         )
     ) {
@@ -73,13 +78,17 @@ fun CityCard(
                     text = city,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF10164F)
+                    color = if (isSelected) {
+                        colors.onSecondaryContainer
+                    } else {
+                        colors.onSurface
+                    }
                 )
 
                 Text(
                     text = landmark,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF606580)
+                    color = colors.onSurfaceVariant
                 )
             }
 
@@ -88,7 +97,7 @@ fun CityCard(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Image(
-                    painter = androidx.compose.ui.res.painterResource(imageRes),
+                    painter = painterResource(imageRes),
                     contentDescription = "$city landmark",
                     modifier = Modifier
                         .size(width = 72.dp, height = 40.dp)
@@ -100,7 +109,7 @@ fun CityCard(
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = "Selected",
-                        tint = Color(0xFF7665C9),
+                        tint = colors.primary,
                         modifier = Modifier.size(28.dp)
                     )
                 }

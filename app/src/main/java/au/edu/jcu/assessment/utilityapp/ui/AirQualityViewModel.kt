@@ -75,6 +75,11 @@ class AirQualityViewModel(
 
             try {
                 val result = repository.getAirQuality(city)
+
+                require(result.usAqi >= 0) {
+                    "Invalid AQI value received from the API."
+                }
+
                 uiState = AirQualityUiState.Success(result)
             } catch (e: CancellationException) {
                 throw e

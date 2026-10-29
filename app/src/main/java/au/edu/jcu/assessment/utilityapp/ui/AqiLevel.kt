@@ -3,6 +3,12 @@ package au.edu.jcu.assessment.utilityapp.ui
 
 import androidx.compose.ui.graphics.Color
 
+/**
+ * Represents US Air Quality Index (AQI) categories.
+ *
+ * Each category provides a display label, an indicator color,
+ * and health advice based on the AQI level.
+ */
 enum class AqiLevel(
     val label: String,
     val color: Color,
@@ -39,14 +45,40 @@ enum class AqiLevel(
         "Everyone should avoid outdoor physical activity."
     );
 
+    /**
+     * Returns a brighter AQI indicator color for dark mode.
+     */
+    fun displayColor(isDarkTheme: Boolean): Color {
+        if (!isDarkTheme) return color
+
+        return when (this) {
+            Good -> Color(0xFF81C784)
+            Moderate -> Color(0xFFFFD54F)
+            UnhealthySensitive -> Color(0xFFFFB74D)
+            Unhealthy -> Color(0xFFEF9A9A)
+            VeryUnhealthy -> Color(0xFFCE93D8)
+            Hazardous -> Color(0xFFFF8A80)
+        }
+    }
+
     companion object {
-        fun fromAqi(aqi: Int): AqiLevel = when {
-            aqi <= 50 -> Good
-            aqi <= 100 -> Moderate
-            aqi <= 150 -> UnhealthySensitive
-            aqi <= 200 -> Unhealthy
-            aqi <= 300 -> VeryUnhealthy
-            else -> Hazardous
+        /**
+         * Returns the corresponding AQI category.
+         *
+         * Negative values are treated as zero as a defensive fallback.
+         * Invalid API data is rejected by the ViewModel before reaching the UI.
+         */
+        fun fromAqi(aqi: Int): AqiLevel {
+            val safeAqi = aqi.coerceAtLeast(0)
+
+            return when {
+                safeAqi <= 50 -> Good
+                safeAqi <= 100 -> Moderate
+                safeAqi <= 150 -> UnhealthySensitive
+                safeAqi <= 200 -> Unhealthy
+                safeAqi <= 300 -> VeryUnhealthy
+                else -> Hazardous
+            }
         }
     }
 }

@@ -28,7 +28,7 @@ fun UtilityScreen(
     }
 
     UtilityScreenContent(
-        cityName = city.name,
+        city = city,
         uiState = uiState,
         onRefresh = onRefresh,
         modifier = modifier
@@ -51,7 +51,7 @@ fun UtilityScreen(
     name = "AirCheck - Loading"
 )
 @Composable
-fun UtilityScreenLoadingPreview() {
+private fun UtilityScreenLoadingPreview() {
     MobileTech_UtilityAppTheme {
         UtilityScreen(
             city = City.Singapore,
@@ -69,7 +69,7 @@ fun UtilityScreenLoadingPreview() {
     name = "AirCheck - Success"
 )
 @Composable
-fun UtilityScreenSuccessPreview() {
+private fun UtilityScreenSuccessPreview() {
     MobileTech_UtilityAppTheme {
         UtilityScreen(
             city = City.Singapore,
@@ -93,7 +93,7 @@ fun UtilityScreenSuccessPreview() {
     name = "AirCheck - Error"
 )
 @Composable
-fun UtilityScreenErrorPreview() {
+private fun UtilityScreenErrorPreview() {
     MobileTech_UtilityAppTheme {
         UtilityScreen(
             city = City.Singapore,

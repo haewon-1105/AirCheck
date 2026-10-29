@@ -1,4 +1,3 @@
-
 package au.edu.jcu.assessment.utilityapp.ui
 
 import androidx.compose.foundation.layout.Arrangement
@@ -9,11 +8,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import au.edu.jcu.assessment.utilityapp.R
+import android.content.res.Configuration
 import au.edu.jcu.assessment.utilityapp.data.City
 import au.edu.jcu.assessment.utilityapp.ui.components.CityCard
 import au.edu.jcu.assessment.utilityapp.ui.theme.MobileTech_UtilityAppTheme
@@ -27,11 +25,7 @@ fun SettingsScreen(
     onCitySelected: (City) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val cities = listOf(
-        Triple(City.Singapore, "Marina Bay", R.drawable.singapore_bg),
-        Triple(City.Seoul, "N Seoul Tower", R.drawable.seoul_bg),
-        Triple(City.Tokyo, "Tokyo Tower", R.drawable.tokyo_bg)
-    )
+
 
     Column(
         modifier = modifier
@@ -43,27 +37,27 @@ fun SettingsScreen(
             text = "Settings",
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.ExtraBold,
-            color = Color(0xFF10164F)
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Text(
             text = "Choose your location",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF10164F)
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Text(
             text = "Select a city to view its air quality.",
             style = MaterialTheme.typography.bodyMedium,
-            color = Color(0xFF606580)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        cities.forEach { (city, landmark, imageRes) ->
+        City.all.forEach { city ->
             CityCard(
                 city = city.name,
-                landmark = landmark,
-                imageRes = imageRes,
+                landmark = city.landmark,
+                imageRes = city.imageRes,
                 isSelected = selectedCity == city,
                 onClick = { onCitySelected(city) }
             )
@@ -73,11 +67,26 @@ fun SettingsScreen(
 
 @Preview(
     showBackground = true,
-    name = "AirCheck Settings Preview"
+    name = "AirCheck Settings Light"
 )
 @Composable
-fun SettingsScreenPreview() {
-    MobileTech_UtilityAppTheme {
+private fun SettingsScreenLightPreview() {
+    MobileTech_UtilityAppTheme(darkTheme = false) {
+        SettingsScreen(
+            selectedCity = City.Singapore,
+            onCitySelected = {}
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    name = "AirCheck Settings Dark",
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun SettingsScreenDarkPreview() {
+    MobileTech_UtilityAppTheme(darkTheme = true) {
         SettingsScreen(
             selectedCity = City.Singapore,
             onCitySelected = {}

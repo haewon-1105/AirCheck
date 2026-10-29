@@ -5,6 +5,9 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 
+/**
+ * Defines the tabs displayed in the bottom navigation bar.
+ */
 enum class AppTab(val label: String, val icon: ImageVector) {
     Utility("Utility", Icons.Default.Home),
     Settings("Settings", Icons.Default.Settings)

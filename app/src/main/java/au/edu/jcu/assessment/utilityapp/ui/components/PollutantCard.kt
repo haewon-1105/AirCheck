@@ -17,20 +17,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
+/**
+ * Displays a pollutant concentration with its unit and icon.
+ */
 @Composable
 fun PollutantCard(
     label: String,
     value: Double?,
     modifier: Modifier = Modifier
 ) {
+    val cardAlpha = CARD_SURFACE_ALPHA
+
     Column(
         modifier = modifier
             .background(
-                color = Color.White.copy(alpha = 0.25f),
+                color = MaterialTheme.colorScheme.surface.copy(alpha = cardAlpha),
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(16.dp),
@@ -44,13 +48,14 @@ fun PollutantCard(
             Text(
                 text = label,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Icon(
                 imageVector = Icons.Default.Air,
                 contentDescription = null,
-                tint = Color(0xFF8EA8EF),
+                tint = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier.size(28.dp)
             )
         }
@@ -58,7 +63,7 @@ fun PollutantCard(
         Text(
             text = value?.let { "$it µg/m³" } ?: "--",
             style = MaterialTheme.typography.titleLarge,
-            color = Color(0xFF10164F)
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }

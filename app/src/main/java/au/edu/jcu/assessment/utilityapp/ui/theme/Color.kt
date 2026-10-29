@@ -1,11 +1,20 @@
+
 package au.edu.jcu.assessment.utilityapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// AirCheck brand colors
+val AirCheckPurple = Color(0xFF6657A6)
+val AirCheckDarkText = Color(0xFF10164F)
+val AirCheckSecondaryText = Color(0xFF606580)
+val AirCheckSelectedCard = Color(0xFFEDE8FF)
+val AirCheckDefaultCard = Color(0xFFF7F5FC)
+val AirCheckCardBorder = Color(0xFFE0DCEB)
+val AirCheckAirIcon = Color(0xFF8EA8EF)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Dark theme colors
+val AirCheckDarkPrimary = Color(0xFFD0BCFF)
+val AirCheckDarkBackground = Color(0xFF141218)
+val AirCheckDarkSurface = Color(0xFF211F26)
+val AirCheckDarkOnSurface = Color(0xFFE6E0E9)
+val AirCheckDarkOnSurfaceVariant = Color(0xFFCAC4D0)

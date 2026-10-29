@@ -1,4 +1,3 @@
-
 package au.edu.jcu.assessment.utilityapp.ui.components
 
 import androidx.compose.foundation.background
@@ -6,7 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -14,12 +13,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import au.edu.jcu.assessment.utilityapp.ui.AirQualityUiState
 import au.edu.jcu.assessment.utilityapp.ui.AqiLevel
+import au.edu.jcu.assessment.utilityapp.ui.theme.AirCheckDarkBackground
 
 /**
  * Displays the US AQI value, air quality category,
@@ -35,13 +34,20 @@ fun AqiCard(
     val errorMessage = (uiState as? AirQualityUiState.Error)?.message
 
     val aqiLevel = airQuality?.usAqi?.let { AqiLevel.fromAqi(it) }
-    val aqiColor = aqiLevel?.color ?: MaterialTheme.colorScheme.onSurface
+    val isDarkTheme =
+        MaterialTheme.colorScheme.background ==
+                AirCheckDarkBackground
+
+    val aqiColor = aqiLevel?.displayColor(isDarkTheme)
+        ?: MaterialTheme.colorScheme.onSurface
 
     Column(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = Color.White.copy(alpha = 0.22f),
+                color = MaterialTheme.colorScheme.surface.copy(
+                    alpha = CARD_SURFACE_ALPHA
+                ),
                 shape = RoundedCornerShape(24.dp)
             )
             .padding(16.dp),
@@ -50,7 +56,7 @@ fun AqiCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp),
+                .heightIn(min = 100.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -58,7 +64,7 @@ fun AqiCard(
                 text = "US AQI:",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF303040)
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Text(
@@ -85,7 +91,7 @@ fun AqiCard(
             Text(
                 text = aqiLevel.advice,
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFF303040)
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
@@ -96,7 +102,8 @@ fun AqiCard(
                 airQuality != null -> "Latest available data from Open-Meteo"
                 else -> "No air quality data available"
             },
-            style = MaterialTheme.typography.bodySmall
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
