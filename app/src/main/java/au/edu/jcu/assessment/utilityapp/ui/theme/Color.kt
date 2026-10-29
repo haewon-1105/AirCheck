@@ -18,3 +18,8 @@ val AirCheckDarkBackground = Color(0xFF141218)
 val AirCheckDarkSurface = Color(0xFF211F26)
 val AirCheckDarkOnSurface = Color(0xFFE6E0E9)
 val AirCheckDarkOnSurfaceVariant = Color(0xFFCAC4D0)
+
+val AirCheckDarkSecondaryContainer = Color(0xFF4A4458)
+val AirCheckDarkSurfaceVariant = Color(0xFF49454F)
+val AirCheckDarkOutlineVariant = Color(0xFF79747E)
+val AirCheckDarkTertiary = Color(0xFFB4C5FF)

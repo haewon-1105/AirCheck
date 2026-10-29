@@ -28,11 +28,11 @@ private val DarkColorScheme = darkColorScheme(
     surface = AirCheckDarkSurface,
     onSurface = AirCheckDarkOnSurface,
     onSurfaceVariant = AirCheckDarkOnSurfaceVariant,
-    secondaryContainer = Color(0xFF4A4458),
+    secondaryContainer = AirCheckDarkSecondaryContainer,
     onSecondaryContainer = AirCheckDarkOnSurface,
-    surfaceVariant = Color(0xFF49454F),
-    outlineVariant = Color(0xFF49454F),
-    tertiary = Color(0xFFB4C5FF)
+    surfaceVariant = AirCheckDarkSurfaceVariant,
+    outlineVariant = AirCheckDarkOutlineVariant,
+    tertiary = AirCheckDarkTertiary
 )
 
 /**
@@ -41,7 +41,6 @@ private val DarkColorScheme = darkColorScheme(
 @Composable
 fun MobileTech_UtilityAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (darkTheme) {

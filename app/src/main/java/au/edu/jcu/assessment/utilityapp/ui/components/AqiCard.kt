@@ -13,12 +13,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import au.edu.jcu.assessment.utilityapp.ui.AirQualityUiState
 import au.edu.jcu.assessment.utilityapp.ui.AqiLevel
-import au.edu.jcu.assessment.utilityapp.ui.theme.AirCheckDarkBackground
 
 /**
  * Displays the US AQI value, air quality category,
@@ -34,9 +34,7 @@ fun AqiCard(
     val errorMessage = (uiState as? AirQualityUiState.Error)?.message
 
     val aqiLevel = airQuality?.usAqi?.let { AqiLevel.fromAqi(it) }
-    val isDarkTheme =
-        MaterialTheme.colorScheme.background ==
-                AirCheckDarkBackground
+    val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < 0.5f
 
     val aqiColor = aqiLevel?.displayColor(isDarkTheme)
         ?: MaterialTheme.colorScheme.onSurface

@@ -66,7 +66,6 @@ enum class AqiLevel(
          * Returns the corresponding AQI category.
          *
          * Negative values are treated as zero as a defensive fallback.
-         * Invalid API data is rejected by the ViewModel before reaching the UI.
          */
         fun fromAqi(aqi: Int): AqiLevel {
             val safeAqi = aqi.coerceAtLeast(0)
