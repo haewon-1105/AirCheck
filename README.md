@@ -35,7 +35,7 @@ AirCheck uses the [Open-Meteo Air Quality API](https://open-meteo.com/en/docs/ai
 
 The application requests:
 
-- US Air Quality Index (`us_aqi`)
+- US Air Quality Index (`usAqi`)
 - PM2.5 (`pm2_5`)
 - PM10 (`pm10`)
 
