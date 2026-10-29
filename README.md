@@ -27,6 +27,8 @@ The app allows users to check current air quality information for selected citie
 | SavedStateHandle | Selected city state restoration |
 | Kotlin Coroutines | Asynchronous API requests |
 | Retrofit | HTTP API communication |
+| Gson Converter | JSON response deserialization |
+| Manual Dependency Injection | Dependency management through AppContainer |
 | Open-Meteo Air Quality API | Air quality data source |
 
 ## Data Source
@@ -35,13 +37,19 @@ AirCheck uses the [Open-Meteo Air Quality API](https://open-meteo.com/en/docs/ai
 
 The application requests:
 
-- US Air Quality Index (`usAqi`)
+- US Air Quality Index (`us_aqi`)
 - PM2.5 (`pm2_5`)
 - PM10 (`pm10`)
 
 Data is retrieved using the latitude and longitude of the selected city.
 
 The information shown represents the latest available API data and should not be treated as a substitute for official emergency or medical advice.
+
+### Attribution
+
+Air quality data by [Open-Meteo.com](https://open-meteo.com/).
+
+Data is provided by Open-Meteo and its underlying data providers. See the [Open-Meteo Terms](https://open-meteo.com/en/terms) for attribution and licensing information.
 
 ## Supported Cities
 
@@ -52,6 +60,15 @@ The information shown represents the latest available API data and should not be
 | Tokyo | Tokyo Tower |
 
 ## How to Run
+
+### Requirements
+
+- Android Studio with support for Android SDK 36
+- Android SDK 36 (compileSdk 36)
+- Android device or emulator running Android 8.0 (API 26) or higher
+- Internet connection for retrieving air quality data
+
+### Installation
 
 1. Clone the repository:
 
@@ -75,16 +92,47 @@ The information shown represents the latest available API data and should not be
 
 ## Application Architecture
 
-AirCheck separates its UI, state management, and data access responsibilities.
+AirCheck follows an MVVM-inspired architecture with separate UI, state management, and data access layers. It uses manual dependency injection to connect these layers.
 
-- **UtilityApp:** Manages bottom navigation between Utility and Settings.
+### Data Flow
+
+```text
+UtilityApplication
+    └── AppContainer (Dependency Injection)
+          └── NetworkAirQualityRepository
+                └── AirQualityApi (Retrofit)
+                      └── Open-Meteo API
+
+UtilityApp
+    ├── UtilityScreen
+    │     └── UtilityScreenContent
+    └── SettingsScreen
+          │
+          ▼
+AirQualityViewModel
+    ├── Selected city (SavedStateHandle)
+    ├── AirQualityUiState
+    │     ├── Loading
+    │     ├── Success
+    │     └── Error
+    └── AirQualityRepository (interface)
+          └── NetworkAirQualityRepository
+```
+
+### Main Components
+
+- **UtilityApplication:** Initializes the application-level dependency container.
+- **AppContainer:** Provides application dependencies using manual dependency injection.
+- **UtilityApp:** Manages navigation between Utility and Settings.
 - **UtilityScreen / UtilityScreenContent:** Displays air quality information and refresh controls.
 - **SettingsScreen:** Allows users to select a city.
-- **AirQualityViewModel:** Manages the selected city, loading states, API requests, and errors.
-- **AirQualityRepository:** Retrieves air quality information.
-- **AirQualityApi:** Defines the Retrofit API request.
+- **AirQualityViewModel:** Manages the selected city, API requests, loading states, and errors.
+- **AirQualityUiState:** Represents Loading, Success, and Error states.
+- **AirQualityRepository:** Defines the data access interface.
+- **NetworkAirQualityRepository:** Implements the repository using the network API.
+- **AirQualityApi:** Defines Retrofit API requests to Open-Meteo.
 - **City:** Centralizes city names, landmarks, coordinates, and background images.
-- **AqiLevel:** Maps US AQI values to categories, indicator colors, and health advice.
+- **AqiLevel:** Maps AQI values to categories, colors, and health guidance.
 
 ## Testing
 
@@ -101,6 +149,14 @@ The following functionality was checked:
 - Network error handling
 - Retry and Close actions
 - Successful project build
+
+## Known Limitations
+
+- **Limited Cities:** The application currently supports only Singapore, Seoul, and Tokyo.
+- **No GPS Integration:** Users select a city manually instead of using their current location.
+- **Internet Required:** Air quality information cannot be retrieved without an internet connection.
+- **No Automated Tests:** Testing has been performed manually using an Android emulator.
+- **API Dependency:** Data availability and update frequency depend on the Open-Meteo Air Quality API.
 
 ## Project Context
 
