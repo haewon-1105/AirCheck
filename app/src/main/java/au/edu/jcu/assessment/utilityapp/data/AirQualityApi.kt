@@ -1,4 +1,3 @@
-
 package au.edu.jcu.assessment.utilityapp.data
 
 import com.google.gson.annotations.SerializedName

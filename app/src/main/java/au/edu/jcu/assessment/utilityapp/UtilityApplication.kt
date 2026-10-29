@@ -1,4 +1,3 @@
-
 package au.edu.jcu.assessment.utilityapp
 
 import android.app.Application

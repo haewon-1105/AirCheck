@@ -1,4 +1,3 @@
-
 package au.edu.jcu.assessment.utilityapp.di
 
 import au.edu.jcu.assessment.utilityapp.data.AirQualityApi
